@@ -1,14 +1,18 @@
 "use client";
 import {
   Avatar,
+  Badge,
   Button,
   Card,
   CardActions,
   CardContent,
   CardHeader,
   Collapse,
+  Divider,
   IconButton,
   IconButtonProps,
+  List,
+  ListItem,
   styled,
   Typography,
 } from "@mui/material";
@@ -16,8 +20,9 @@ import { red } from "@mui/material/colors";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import CommentIcon from "@mui/icons-material/Comment";
 import React, { useEffect, useRef, useState } from "react";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Link from "next/link";
+import Comment from "../Comment/Comment";
+import CommentForm from "../Comment/CommentForm";
 
 interface PostProps {
   title: string | null;
@@ -52,7 +57,6 @@ const Post: React.FC<PostProps> = ({
   const [expanded, setExpanded] = useState<boolean>(false);
   const [liked, setLiked] = useState<boolean>(false);
   const [commentList, setCommentList] = useState<any[]>([]);
-  const isInitialMount = useRef(true);
 
   const handleExpandClick = () => {
     setExpanded(!expanded);
@@ -77,14 +81,17 @@ const Post: React.FC<PostProps> = ({
       );
   };
 
+  const handleComment = () => {
+    fetchComments()
+    setExpanded(!expanded);
+  }
+
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else fetchComments();
-  }, [expanded, commentList]);
+    fetchComments();
+  }, []);
 
   return (
-    <Card sx={{ maxWidth: 600, minWidth: 600 }}>
+    <Card sx={{ maxWidth: 600, minWidth: 600 }} className="rounded-3xl">
       <CardHeader
         avatar={
           <Link href={{ pathname: "/users/" + userId }}>
@@ -107,26 +114,42 @@ const Post: React.FC<PostProps> = ({
           onClick={handleLike}
           className={`${liked && "text-red-500"}`}
         >
+          <Badge badgeContent={2} color="secondary">
           <FavoriteIcon />
+          </Badge>
         </IconButton>
-
+        <IconButton onClick={handleComment}>
+            {
+              commentList.length > 0 ? (
+              <Badge badgeContent={" "} color="primary" variant="dot">
+                  <CommentIcon />
+              </Badge>
+              ) : 
+              <CommentIcon />
+            }
+          </IconButton>
         <ExpandMore
           expand={expanded}
           onClick={handleExpandClick}
           aria-expanded={expanded}
           aria-label="show more"
         >
-          <IconButton onClick={fetchComments}>
-            <CommentIcon />
-          </IconButton>
         </ExpandMore>
       </CardActions>
       <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {
-            commentList.map((comment) => (
-              //<Comment />
-            ))
-          }
+        <List
+          sx={{ width: "100%", bgcolor: "background.paper" }}
+          className="p-0"
+        >
+          <CommentForm
+            userId={userId}
+            postId={postId}
+            fetchComments={fetchComments}
+          />
+          {commentList.map((comment) => (
+            <Comment username={username} key={comment?.id} comment={comment} />
+          ))}
+        </List>
       </Collapse>
     </Card>
   );

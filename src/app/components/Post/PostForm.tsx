@@ -74,7 +74,7 @@ const PostForm: React.FC<PostFormProps> = ({
   };
 
   return (
-    <Card sx={{ minWidth: 600 }} className="border border-blue-500 shadow-xl">
+    <Card sx={{ minWidth: 600 }} className="border border-blue-500 shadow-xl rounded-lg">
       <div className="m-2 border-b px-2 font-semibold">Create a Post</div>
       <CardHeader
         avatar={

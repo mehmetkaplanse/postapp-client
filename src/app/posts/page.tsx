@@ -17,6 +17,8 @@ const Posts = () => {
       .then((res) => res.json())
       .then(
         (result) => {
+          console.log(result,"resulttt");
+          
           setIsLoaded(true);
           setPostList(result);
         },
